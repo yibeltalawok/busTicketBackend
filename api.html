@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>API Documentation</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f8f9fa;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      text-align: center;
+      color: #343a40;
+      max-width: 800px;
+      padding: 20px;
+    }
+
+    h1 {
+      color: #007bff;
+      font-size: 2em;
+      margin-bottom: 10px;
+    }
+
+    h3 {
+      color: #28a745;
+      font-size: 1.5em;
+      margin-bottom: 10px;
+    }
+
+    p {
+      color: #6c757d;
+      font-size: 1.2em;
+      margin-bottom: 10px;
+    }
+
+    .api-list {
+      list-style: none;
+      padding: 0;
+      margin: 20px;
+      max-width: 600px;
+    }
+
+    .api-item {
+      background-color: #ffffff;
+      margin: 10px 0;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .api-item:hover {
+      background-color: #28a745;
+      color: #fff;
+    }
+
+    .api-url {
+      color: #007bff;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .api-url:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <h1>EPLUS APP Transport System API Documentation</h1>
+    <p>This is Swagger API documentation for all systems per module and service.</p>
+    <h3>Steps to Use this API Documentation</h3>
+    <p>All modules or services are listed below.</p>
+    <p>Click the service or module you want.</p>
+    <p>Then you get the Swagger documentation of the clicked module.</p>
+    <p>Read the Swagger documentation of each operation (GET, POST, DELETE, UPDATE, GET BY ID).</p>
+
+    <ul class="api-list">
+      <!-- Dynamically generate API URLs based on swaggerDocuments object -->
+      <script>
+       const swaggerDocuments = {
+  'bus-owner': '/api-docs/bus-owner',
+  'assocation': '/api-docs/assocation',
+  'station': '/api-docs/station',
+  'maintainance': '/api-docs/maintainance',
+  'bus': '/api-docs/bus',
+  'users': '/api-docs/users',
+  'messages': '/api-docs/messages',
+  'materials': '/api-docs/materials',
+  'drivers': '/api-docs/drivers',
+  'terminals': '/api-docs/terminals',
+  'assignation': '/api-docs/assignation',
+  'accidents': '/api-docs/accidents',
+  'punshiments': '/api-docs/punshiments',
+  'passengers': '/api-docs/passangers',
+  'tickets': '/api-docs/tickets',
+  'feedbacks': '/api-docs/feedback',
+  'servicePayment': '/api-docs/servicePayment',
+  'attendances': '/api-docs/attendances',
+  'login': '/api-docs/login',
+  'booking':'/api-docs/booking',
+
+};
+
+
+        for (const key in swaggerDocuments) {
+          if (swaggerDocuments.hasOwnProperty(key)) {
+            const apiUrl = swaggerDocuments[key];
+            document.write(`
+            <li class="api-item" onclick="openApiDoc('${apiUrl}')">
+              <a href="#" class="api-url">${key}</a>
+            </li>
+          `);
+          }
+        }
+      </script>
+    </ul>
+  </div>
+
+  <script>
+    function openApiDoc(apiUrl) {
+      window.open(`https://eplus.abyssiniasoftware.com${apiUrl}`, '_blank');
+    }
+  </script>
+</body>
+
+</html>
