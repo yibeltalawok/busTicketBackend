@@ -208,18 +208,16 @@ const getRoutesByParams = async (req, res) => {
     }
 
     const { destinationStationId, sourceStationId, date } = req.query;
-
     // Validate if destinationStationId, sourceStationId, and date are present
     if (!destinationStationId || !sourceStationId || !date) {
       return res.status(400).json({ error: 'destinationStationId, sourceStationId, and date are required parameters' });
     }
 
     const routes = await Booking.findAll({
-      where: {
-        destinationStationId,
-        sourceStationId,
-        date,
-      },
+      where: { destinationStationId:destinationStationId,
+               sourceStationId:sourceStationId,
+               date:date
+       },
       include: [
         { model: Station, as: 'sourceStation' },
         { model: Station, as: 'destinationStation' },
@@ -228,6 +226,7 @@ const getRoutesByParams = async (req, res) => {
         { model: Bus, as: 'bus' },
       ],
     });
+    console.log(routes)
 
     const formattedRoutes = routes.map((route) => {
       if (!route.sourceStation) {

@@ -4,7 +4,7 @@ const Station = require('../models/stationModel');
 
 exports.createTerminal = async (req, res, next) => {
   try {
-  const { sourceStationId, destinationStationId,  graveDistance,asphaltDistance,servicePayment,estimatedTime } = req.body;
+  const { sourceStationId, destinationStationId,cost, graveDistance,asphaltDistance,servicePayment,estimatedTime } = req.body;
     // Validate if source and destination stations exist
     const sourceStation = await Station.findByPk(sourceStationId);
     const destinationStation = await Station.findByPk(destinationStationId);
@@ -18,6 +18,7 @@ exports.createTerminal = async (req, res, next) => {
       destinationStationId,
       graveDistance,
        asphaltDistance,
+       cost,
        servicePayment,
        estimatedTime
     });
@@ -57,7 +58,7 @@ exports.getAllTerminals = async (req, res, next) => {
        if (!busRouting) {
          res.status(404).json({ error: 'Route not found try again.' });
        } else {
-         res.json(busRouting);
+         res.status(200).json(busRouting);
        }
      } catch (error) {
        next(error);
@@ -67,7 +68,7 @@ exports.getAllTerminals = async (req, res, next) => {
 exports.updateTerminal = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { sourceStationId, destinationStationId,  graveDistance, asphaltDistance,servicePayment,estimatedTime} = req.body;
+    const { sourceStationId, destinationStationId, cost, graveDistance, asphaltDistance,servicePayment,estimatedTime} = req.body;
 
     const existingTerminal = await Route.findByPk(id);
 
@@ -89,6 +90,7 @@ exports.updateTerminal = async (req, res, next) => {
       sourceStationId,
       destinationStationId,
       graveDistance,
+      cost,
        asphaltDistance,
        servicePayment,
        estimatedTime

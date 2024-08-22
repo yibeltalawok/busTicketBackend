@@ -70,6 +70,7 @@ const messageRoutes = require("./routes/communicationRoute");
 const lostRoutes = require("./routes/lostRoute");
 const driverRoutes = require("./routes/driveRoute");
 const busTerminals = require("./routes/terminalRouting");
+const Tariff = require("./routes/tariffRoute");
 const busAssignation = require("./routes/busAssignationRoute");
 const accidentRoutes = require("./routes/accidentRoute");
 const punishmentRoutes = require("./routes/punishmentRoute");
@@ -86,6 +87,7 @@ const penaltyCategoryRoutes = require("./routes/penalityCategoryRoute");
 const location = require("./routes/locationRoute");
 const driverBooking = require("./routes/drivierBookingRoute");
 const driverServicePaymnet = require("./routes/driverServicePaymnetRoute");
+const resetPassword = require("./routes/resetPasswordRouter");
 
 // Swagger documentation import
 // const swaggerDocuments = {
@@ -127,6 +129,7 @@ app.use("/api", messageRoutes);
 app.use("/api", lostRoutes);
 app.use("/api", driverRoutes);
 app.use("/api", busTerminals);
+app.use("/api", Tariff);
 app.use("/api", busAssignation);
 app.use("/api", accidentRoutes);
 app.use("/api", punishmentRoutes);
@@ -143,6 +146,7 @@ app.use("/api", penaltyCategoryRoutes);
 app.use("/api", location);
 app.use("/api", driverBooking);
 app.use("/api", driverServicePaymnet);
+app.use("/api", resetPassword);
 
 // Swagger documentation setup
 // Object.entries(swaggerDocuments).forEach(([key, value]) => {

@@ -33,7 +33,6 @@ const updateTicketOrderValidation = [
   body('BusId').optional().isNumeric(),
   body('RouteId').optional().isNumeric()
 ];
-
 // Routes
 router.post('/ticket', createTicketOrderValidation, createTicketOrder);
 router.get('/ticket', getAllTicketOrders);

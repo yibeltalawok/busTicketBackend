@@ -15,7 +15,7 @@ const {
 const createRouteValidation = [
   body('sourceStationId').isInt(),
   body('destinationStationId').isInt(),
-  body('distance').optional().isString(),
+  // body('distance').optional().isString(),
   body('date').optional().isString(),
   body('cost').isString(),
   body('estimatedTime').optional().isString(),
@@ -27,7 +27,7 @@ const updateRouteValidation = [
   param('id').isInt(),
   body('sourceStationId').isInt(),
   body('destinationStationId').isInt(),
-  body('distance').optional().isString(),
+  // body('distance').optional().isString(),
   body('date').optional().isString(),
   body('cost').isString(),
   body('estimatedTime').optional().isString(),
@@ -50,6 +50,6 @@ router.put('/routes/:id', updateRouteValidation, updateRouteById);
 router.delete('/routes/:id', param('id').isInt(), deleteRouteById);
 
 // Custom endpoint to retrieve routes based on destinationStationId, sourceStationId, and date
-router.get('/filter-route', getRoutesByParamsValidation, getRoutesByParams);
+// router.get('/filter-route', getRoutesByParamsValidation, getRoutesByParams);
 
 module.exports = router;

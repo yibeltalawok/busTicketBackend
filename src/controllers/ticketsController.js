@@ -2,6 +2,7 @@ const { Op } = require('sequelize');
 const { validationResult } = require('express-validator');
 const Ticket = require('../models/ticketsModel');
 const Bus = require('../models/busModel');
+const assignedBus = require('../models/busAssignationModel');
 const Route = require('../models/terminalModel');
 const Passenger = require('../models/passengerModel');
 // Create a new ticket order
@@ -11,9 +12,7 @@ const createTicketOrder = async (req, res) => {
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-
-    const { seatNumber, reservationDate, PassengerId, BusId, RouteId } = req.body;
-
+    const { seatNumber,fullName,phoneNumber, reservationDate, PassengerId, BusId, RouteId } = req.body;
     // Check if the bus exists
     const bus = await Bus.findByPk(BusId);
     const capacity=bus.capacity;
@@ -23,7 +22,6 @@ const createTicketOrder = async (req, res) => {
     if (!seatNumber || isNaN(seatNumber) || seatNumber < 1 || seatNumber > capacity) {
       return res.status(404).json({ error: 'Invalid seat number. Please provide a seat number between 1 and .' +capacity });
   }
-
     if (!bus) {
       return res.status(404).json({ error: 'Bus not found' });
     }
@@ -36,10 +34,13 @@ const createTicketOrder = async (req, res) => {
     const ticket = await Ticket.create({
       seatNumber,
       reservationDate,
+      fullName,
+      phoneNumber,
       PassengerId,
       BusId,
       RouteId,
     });
+
     res.status(201).json(ticket);
   } catch (error) {
     console.error('Error creating ticket order:', error);
@@ -70,15 +71,14 @@ const getAllTicketOrders = async (req, res) => {
 const getTicketOrderById = async (req, res) => {
   try {
     const { id } = req.params;
+    console.log(id)
     const ticketOrder = await Ticket.findByPk(id,
       {
         include: [
           { model: Passenger },
           { model: Bus },
           { model: Route }
-        ]
-      }
-      );
+        ]});
     if (!ticketOrder) {
       return res.status(404).json({ error: 'Ticket order not found' });
     }
@@ -93,7 +93,7 @@ const getTicketOrderById = async (req, res) => {
 const updateTicketOrderById = async (req, res) => {
   try {
     const { id } = req.params;
-    const { seatNumber, reservationDate, PassengerId, BusId, RouteId } = req.body;
+    const { seatNumber,fullName,phoneNumber, reservationDate, PassengerId, BusId, RouteId } = req.body;
 
     // Check if the ticket order exists
     const ticket = await Ticket.findByPk(id);
@@ -105,6 +105,8 @@ const updateTicketOrderById = async (req, res) => {
     await ticket.update({
       seatNumber,
       reservationDate,
+      phoneNumber,
+      fullName,
       PassengerId,
       BusId,
       RouteId,
@@ -125,9 +127,7 @@ const deleteTicketOrderById = async (req, res) => {
     if (!ticket) {
       return res.status(404).json({ error: 'Ticket order not found' });
     }
-
     await ticket.destroy();
-
     res.status(204).send();
   } catch (error) {
     console.error('Error deleting ticket order:', error);
@@ -196,7 +196,6 @@ const getTicketOrdersByDate = async (req, res) => {
    const getTicketOrdersByPassenger = async (req, res) => {
      try {
        const { passengerId } = req.params;
-       console.log("passengerId",passengerId)
        const ticketOrders = await Ticket.findAll({
         where: { PassengerId:passengerId },
         include: [
@@ -220,7 +219,6 @@ const getTicketOrdersByDate = async (req, res) => {
           seatNumber: seatNumber
         }
       });
-
       // If no ticket found, seat is available
       return !existingTicket;
     } catch (error) {
@@ -252,52 +250,68 @@ const getTicketOrdersByDate = async (req, res) => {
       res.status(500).json({ error: 'Internal Server Error' });
     }
   };
-
 // Get free seat numbers for each bus
 const getFreeSeatNumbersByBus = async (req, res) => {
   try {
     // Fetch all buses
-    const buses = await Bus.findAll();
-
-    // Array to hold the result
+    const assignedBuses = await assignedBus.findAll();
     const freeSeatNumbersByBus = [];
+    const date = new Date();
+    const dateString = date.toISOString().split('T')[0];
+    for (const assignedBus of assignedBuses) {
+      const assignedDate = new Date(assignedBus.date);
+      const assignedDateString=assignedDate.toISOString().split('T')[0];
+      if(assignedDateString==dateString){
+      const bus = await Bus.findByPk(assignedBus.busId);
+      if (bus) {
+        // Fetch booked seat numbers for this bus
+        const bookedTickets = await Ticket.findAll({
+          where: { BusId: bus.id },
+          attributes: ['seatNumber'],
+          raw: true,
+        });
 
-    // Iterate over each bus
-    for (const bus of buses) {
-      // Fetch booked seat numbers for this bus
-      const bookedTickets = await Ticket.findAll({
-        where: { BusId: bus.id },
-        attributes: ['seatNumber'],
-        raw: true,
-      });
-
-      // Extract booked seat numbers
-      const bookedSeatNumbers = bookedTickets.map(ticket => ticket.seatNumber);
-
-      // Generate free seat numbers
-      const freeSeatNumbers = [];
-      for (let i = 1; i <= bus.capacity; i++) {
-        if (!bookedSeatNumbers.includes(String(i))) {
-          freeSeatNumbers.push(i);
+        // Extract booked seat numbers
+        const bookedSeatNumbers = bookedTickets.map(ticket => ticket.seatNumber);
+        // Generate free seat numbers
+        const freeSeatNumbers = [];
+        for (let i = 1; i <= bus.capacity; i++) {
+          if (!bookedSeatNumbers.includes(String(i))) {
+            freeSeatNumbers.push(i);
+          }
         }
+
+        // Push the result for this bus including bus information
+        freeSeatNumbersByBus.push({
+          busId: bus.id,
+          busDetails: bus,
+          freeSeatNumbers
+        });
       }
-
-      // Push the result for this bus including bus information
-      freeSeatNumbersByBus.push({
-        busId: bus.id,
-        busDetails: bus,
-        freeSeatNumbers
-      });
     }
+    else{
+      const bus = await Bus.findByPk(assignedBus.busId);
 
+      if (bus) {
+        const freeSeatNumbers = [];
+        for (let i = 1; i <= bus.capacity; i++) {
+            freeSeatNumbers.push(i);
+        }
+        // Push the result for this bus including bus information
+        freeSeatNumbersByBus.push({
+          busId: bus.id,
+          busDetails: bus,
+          freeSeatNumbers
+        });
+      }
+    }
+  }
     res.status(200).json(freeSeatNumbersByBus);
   } catch (error) {
     console.error('Error fetching free seat numbers by bus:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
-
-
    module.exports = {
      createTicketOrder,
      getAllTicketOrders,

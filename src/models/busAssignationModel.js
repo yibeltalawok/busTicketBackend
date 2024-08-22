@@ -26,27 +26,29 @@ const BusAssignation = sequelize.define('BusAssignation', {
       key: 'id',
     },
   },
-  startTime: {
-    type: DataTypes.DATE,
+  date: {
+    type: DataTypes.STRING,
     allowNull: true,
   },
-  endTime: {
-    type: DataTypes.DATE,
-    allowNull: true,
+  destinationStationId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
   },
-
+  sourceStationId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
   reason: {
     type: DataTypes.STRING,
     allowNull: true,
   },
-  assignationType: {
+  type: {
     type: DataTypes.STRING,
     allowNull: true,
-  }
+  },
 });
 
 // Define associations
-
 BusAssignation.belongsTo(Route, { foreignKey: 'routeId', as: 'route' });
 BusAssignation.belongsTo(Bus, { foreignKey: 'busId', as: 'bus' });
 

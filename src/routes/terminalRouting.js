@@ -7,6 +7,4 @@ router.post('/terminals', TerminalController.createTerminal);
 router.get('/terminals', TerminalController.getAllTerminals);
 router.get('/terminals/:id', TerminalController.getTerminalById);
 router.put('/terminals/:id', TerminalController.updateTerminal);
-router.delete('/terminals/:id', TerminalController.deleteTerminal);
-
 module.exports = router;

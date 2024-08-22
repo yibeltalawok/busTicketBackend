@@ -1,13 +1,14 @@
 // controllers/busAssignationController.js
 const BusAssignation = require('../models/busAssignationModel');
-const Driver = require('../models/driverModel');
 const Bus = require('../models/busModel');
 const Station = require('../models/stationModel');
 const Route = require('../models/terminalModel');
+const { validationResult } = require('express-validator');
 
 // CREATE a new bus assignation
 exports.createBusAssignation = async (req, res) => {
   try {
+    console.log("body==",req.body)
     const newBusAssignation = await BusAssignation.create(req.body);
     res.status(201).json(newBusAssignation);
   } catch (error) {
@@ -36,7 +37,6 @@ exports.getAllBusAssignations = async (req, res) => {
         ] },
         { model: Bus, as: 'bus' },
       ],});
-      console.log(res)
     res.status(200).json(allBusAssignations);
   } catch (error) {
     res.status(500).json({ error: 'Internal server error' });
@@ -94,7 +94,7 @@ exports.deleteBusAssignationById = async (req, res) => {
 
   try {
     const deletedRowCount = await BusAssignation.destroy({
-      where: { id: busAssignationId },
+      where: {id: busAssignationId },
     });
     if (deletedRowCount > 0) {
       res.status(204).send();
@@ -103,5 +103,59 @@ exports.deleteBusAssignationById = async (req, res) => {
     }
   } catch (error) {
     res.status(500).json({ error: error });
+  }
+};
+// Custom endpoint to retrieve routes based on destinationStationId, sourceStationId, and date
+exports.getRoutesByParams = async (req, res) => {
+  console.log(req.query)
+
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    const { destinationStationId, sourceStationId, date } = req.query;
+    // Validate if destinationStationId, sourceStationId, and date are present
+    if (!destinationStationId || !sourceStationId || !date) {
+      return res.status(400).json({ error: 'destinationStationId, sourceStationId, and date are required parameters' });
+    }
+
+    const routes = await BusAssignation.findAll({
+      where: {
+        destinationStationId,
+        sourceStationId,
+        date
+      },
+      include: [
+        { model: Route, as: 'route', include: [
+          { model: Station, as: 'sourceStation' },
+          { model: Station, as: 'destinationStation' }
+        ] },
+        { model: Bus, as: 'bus' },
+      ],
+    });
+    console.log(routes)
+
+    const formattedRoutes = routes.map((route) => {
+      if (!route.sourceStation) {
+        route.sourceStation = null;
+      }
+      if (!route.destinationStation) {
+        route.destinationStation = null;
+      }
+      if (!route.assignedBus) {
+        route.assignedBus = null;
+      }
+      if (!route.bus) {
+        route.bus = null;
+      }
+      return route;
+    });
+    res.status(200).json(formattedRoutes);
+    console.log(formattedRoutes)
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };

@@ -40,7 +40,7 @@ const Booking = sequelize.define('Booking', {
       key: 'id',
     },
   },
-  distance: {
+  servicePayment: {
     type: DataTypes.STRING,
     allowNull: true,
   },

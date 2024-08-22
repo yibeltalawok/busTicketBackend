@@ -2,7 +2,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/db');
 const Station = require('./stationModel');
-
 const Route = sequelize.define('Route', {
   id: {
     type: DataTypes.INTEGER,
@@ -31,11 +30,14 @@ const Route = sequelize.define('Route', {
     type: DataTypes.STRING,
     allowNull: true,
   },
+  cost: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },  
   servicePayment: {
     type: DataTypes.STRING,
     allowNull: true,
-  },
-  
+  },  
   estimatedTime: {
     type: DataTypes.STRING,
     allowNull: true,
@@ -46,3 +48,5 @@ Route.belongsTo(Station, { foreignKey: 'sourceStationId', as: 'sourceStation' })
 Route.belongsTo(Station, { foreignKey: 'destinationStationId', as: 'destinationStation' });
 
 module.exports = Route;
+
+
