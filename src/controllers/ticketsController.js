@@ -139,14 +139,15 @@ const deleteTicketOrderById = async (req, res) => {
 const getTicketOrdersByBus = async (req, res) => {
      try {
        const { BusId } = req.params;
-       const ticketOrders = await Ticket.findAll({
-         where: { BusId:BusId },
+       const assignedBuses = await assignedBus.findAll({ where: { BusId: BusId}});
+       console.log("transport===",assignedBuses[0]?.dataValues?.date)
+      const ticketOrders = await Ticket.findAll({
+        where: { BusId:BusId,reservationDate:assignedBuses[0]?.dataValues?.date },
           include: [
             { model: Passenger },
             { model: Bus },
             { model: Route }
           ]
-
        });
        res.status(200).json(ticketOrders);
      } catch (error) {
@@ -256,21 +257,21 @@ const getFreeSeatNumbersByBus = async (req, res) => {
     // Fetch all buses
     const assignedBuses = await assignedBus.findAll();
     const freeSeatNumbersByBus = [];
-    const date = new Date();
-    const dateString = date.toISOString().split('T')[0];
+    // const date = new Date();
+    // const dateString = date.toISOString().split('T')[0];
     for (const assignedBus of assignedBuses) {
-      const assignedDate = new Date(assignedBus.date);
-      const assignedDateString=assignedDate.toISOString().split('T')[0];
-      if(assignedDateString==dateString){
+      const assignedDate = assignedBus.date;
+      // const assignedDateString=assignedDate.toISOString().split('T')[0];
       const bus = await Bus.findByPk(assignedBus.busId);
       if (bus) {
         // Fetch booked seat numbers for this bus
         const bookedTickets = await Ticket.findAll({
-          where: { BusId: bus.id },
-          attributes: ['seatNumber'],
+          where: { BusId: bus.id ,
+                   reservationDate:assignedDate
+                  },
+         attributes: ['seatNumber'],
           raw: true,
         });
-
         // Extract booked seat numbers
         const bookedSeatNumbers = bookedTickets.map(ticket => ticket.seatNumber);
         // Generate free seat numbers
@@ -280,7 +281,6 @@ const getFreeSeatNumbersByBus = async (req, res) => {
             freeSeatNumbers.push(i);
           }
         }
-
         // Push the result for this bus including bus information
         freeSeatNumbersByBus.push({
           busId: bus.id,
@@ -289,23 +289,6 @@ const getFreeSeatNumbersByBus = async (req, res) => {
         });
       }
     }
-    else{
-      const bus = await Bus.findByPk(assignedBus.busId);
-
-      if (bus) {
-        const freeSeatNumbers = [];
-        for (let i = 1; i <= bus.capacity; i++) {
-            freeSeatNumbers.push(i);
-        }
-        // Push the result for this bus including bus information
-        freeSeatNumbersByBus.push({
-          busId: bus.id,
-          busDetails: bus,
-          freeSeatNumbers
-        });
-      }
-    }
-  }
     res.status(200).json(freeSeatNumbersByBus);
   } catch (error) {
     console.error('Error fetching free seat numbers by bus:', error);
