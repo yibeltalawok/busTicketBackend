@@ -18,18 +18,18 @@ const Station = sequelize.define('Station', {
   },
   contactPersonName: {
     type: DataTypes.STRING(255),
-    allowNull: false,
+    allowNull: true,
   },
   contactPersonEmail: {
     type: DataTypes.STRING(255),
-    allowNull: false,
-    validate: {
-      isEmail: true,
-    },
+    allowNull: true,
+    // validate: {
+    //   isEmail: true,
+    // },
   },
   contactPersonPhone: {
     type: DataTypes.STRING(20),
-    allowNull: false,
+    allowNull: true,
   },
 });
 

@@ -10,7 +10,6 @@ const Ticket = sequelize.define('Ticket', {
     primaryKey: true,
     autoIncrement: true,
   },
-
   seatNumber: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -24,7 +23,7 @@ const Ticket = sequelize.define('Ticket', {
     allowNull: true,
   },
   reservationDate: {
-    type: DataTypes.DATE,
+    type: DataTypes.STRING,
     allowNull: false,
   },
 });
@@ -33,4 +32,5 @@ const Ticket = sequelize.define('Ticket', {
 Ticket.belongsTo(Passenger);
 Ticket.belongsTo(Bus);
 Ticket.belongsTo(Route);
+
 module.exports = Ticket;

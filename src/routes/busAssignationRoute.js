@@ -17,5 +17,4 @@ router.get('/assignations/:id', busAssignationController.getBusAssignationById);
 router.put('/assignations/:id', busAssignationController.updateBusAssignationById);
 router.delete('/assignations/:id', busAssignationController.deleteBusAssignationById);
 router.get('/filter-route', getRoutesByParamsValidation,busAssignationController.getRoutesByParams);
-
 module.exports = router;

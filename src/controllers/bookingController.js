@@ -226,8 +226,6 @@ const getRoutesByParams = async (req, res) => {
         { model: Bus, as: 'bus' },
       ],
     });
-    console.log(routes)
-
     const formattedRoutes = routes.map((route) => {
       if (!route.sourceStation) {
         route.sourceStation = null;

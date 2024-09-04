@@ -5,6 +5,11 @@ const Association = require('./assocationModel');
 const Driver = require('./driverModel'); // Import the Driver model
 
 const Bus = sequelize.define('Bus', {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+  },
   // licensePlate: {
   //   type: DataTypes.STRING,
   //   allowNull: false,

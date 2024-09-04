@@ -34,14 +34,14 @@ const updateTicketOrderValidation = [
   body('RouteId').optional().isNumeric()
 ];
 // Routes
-router.post('/ticket', createTicketOrderValidation, createTicketOrder);
+router.post('/ticket', createTicketOrder);
 router.get('/ticket', getAllTicketOrders);
 router.get('/ticket/:id', param('id').isNumeric(), getTicketOrderById);
-router.put('/ticket/:id', updateTicketOrderValidation, updateTicketOrderById);
+router.put('/ticket/:id', updateTicketOrderById);
 router.delete('/ticket/:id', param('id').isNumeric(), deleteTicketOrderById);
-router.get('/get-free-seat', getFreeSeatNumbersByBus); // Corrected the route path
+router.get('/get-free', getFreeSeatNumbersByBus); // Corrected the route path
 router.post('/check-bus-seat-reservation', checkSeatReservation); // Changed to POST method and corrected the route path
-router.get('/ticket/bus/:BusId', param('BusId').isNumeric(), getTicketOrdersByBus);
+router.get('/ticket-bus', getTicketOrdersByBus);
 router.get('/ticket/route/:RouteId', param('RouteId').isNumeric(), getTicketOrdersByRoute);
 router.get('/ticket/date/:date', param('date').isISO8601(), getTicketOrdersByDate); // Added validation for date
 router.get('/ticket/passenger/:passengerId', param('passengerId').isNumeric(), getTicketOrdersByPassenger);

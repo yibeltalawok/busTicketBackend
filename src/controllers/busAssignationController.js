@@ -8,7 +8,6 @@ const { validationResult } = require('express-validator');
 // CREATE a new bus assignation
 exports.createBusAssignation = async (req, res) => {
   try {
-    console.log("body==",req.body)
     const newBusAssignation = await BusAssignation.create(req.body);
     res.status(201).json(newBusAssignation);
   } catch (error) {
@@ -107,8 +106,6 @@ exports.deleteBusAssignationById = async (req, res) => {
 };
 // Custom endpoint to retrieve routes based on destinationStationId, sourceStationId, and date
 exports.getRoutesByParams = async (req, res) => {
-  console.log(req.query)
-
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -130,12 +127,10 @@ exports.getRoutesByParams = async (req, res) => {
         { model: Route, as: 'route', include: [
           { model: Station, as: 'sourceStation' },
           { model: Station, as: 'destinationStation' }
-        ] },
+           ] },
         { model: Bus, as: 'bus' },
       ],
     });
-    console.log(routes)
-
     const formattedRoutes = routes.map((route) => {
       if (!route.sourceStation) {
         route.sourceStation = null;
@@ -152,7 +147,6 @@ exports.getRoutesByParams = async (req, res) => {
       return route;
     });
     res.status(200).json(formattedRoutes);
-    console.log(formattedRoutes)
 
   } catch (error) {
     console.error(error);
