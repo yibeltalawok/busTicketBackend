@@ -30,6 +30,10 @@ const BusAssignation = sequelize.define('BusAssignation', {
     type: DataTypes.STRING,
     allowNull: true,
   },
+  estimatedTime: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
   destinationStationId: {
     type: DataTypes.INTEGER,
     allowNull: false,

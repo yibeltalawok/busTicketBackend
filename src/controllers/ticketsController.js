@@ -12,7 +12,7 @@ const createTicketOrder = async (req, res) => {
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-    const { seatNumber,fullName,phoneNumber, reservationDate, PassengerId, BusId, RouteId } = req.body;
+    const { seatNumber,fullName,phoneNumber,uniqueNumber, reservationDate,assignationDate,PassengerId, BusId, RouteId } = req.body;
   //   // Check if the bus exists
   //   const bus = await Bus.findByPk(BusId);
   //   const capacity=bus.capacity;
@@ -31,23 +31,19 @@ const createTicketOrder = async (req, res) => {
   //   }
 
     // Record the ticket order
-    const ticket = await Ticket.create({
-      seatNumber,
-      reservationDate,
-      fullName,
-      phoneNumber,
-      PassengerId,
-      BusId,
-      RouteId,
-    });
-
+    let data =[]
+    for(let i=0;i<req.body.length;i++){
+      data.push({seatNumber:req.body[i].seatNumber,reservationDate:req.body[i].reservationDate,assignationDate:req.body[i].assignationDate
+        ,fullName:req.body[i].fullName,uniqueNumber:req.body[i].uniqueNumber,phoneNumber:req.body[i].phoneNumber,PassengerId:req.body[i].PassengerId,
+      BusId:req.body[i].BusId,RouteId:req.body[i].RouteId})
+            }
+    const ticket = await Ticket.bulkCreate(data);
     res.status(201).json(ticket);
   } catch (error) {
     console.error('Error creating ticket order:', error);
     res.status(500).json({ error: error });
   }
 };
-
 // Get all ticket orders
 const getAllTicketOrders = async (req, res) => {
   try {
@@ -92,7 +88,7 @@ const getTicketOrderById = async (req, res) => {
 const updateTicketOrderById = async (req, res) => {
   try {
     const { id } = req.params;
-    const { seatNumber,fullName,phoneNumber, reservationDate, PassengerId, BusId, RouteId } = req.body;
+    const { seatNumber,fullName,phoneNumber,uniqueNumber, reservationDate,assignationDate,PassengerId, BusId, RouteId } = req.body;
 
     // Check if the ticket order exists
     const ticket = await Ticket.findByPk(id);
@@ -104,7 +100,9 @@ const updateTicketOrderById = async (req, res) => {
     await ticket.update({
       seatNumber,
       reservationDate,
+      assignationDate,
       phoneNumber,
+      uniqueNumber,
       fullName,
       PassengerId,
       BusId,
@@ -141,13 +139,13 @@ const getTicketOrdersByBus = async (req, res) => {
       if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
       }
-      const {BusId,reservationDate}  = req.query;
-      if (!BusId || !reservationDate) {
-        return res.status(400).json({ error: 'BusId and reservationDate are required parameters' });
+      const {BusId,assignationDate}  = req.query;
+      if (!BusId || !assignationDate) {
+        return res.status(400).json({ error: 'BusId and assignationDate are required parameters' });
       }
       //  const assignedBuses = await assignedBus.findAll({ where: { BusId: BusId}});
         const ticketOrders = await Ticket.findAll({
-          where: { BusId,reservationDate },
+          where: { BusId,assignationDate },
           include: [
             { model: Passenger },
             { model: Bus },
@@ -262,10 +260,10 @@ const getFreeSeatNumbersByBus = async (req, res) => {
       if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
       }
-      const {BusId,reservationDate}  = req.query;
-      console.log("bus id and reservation date==",BusId,reservationDate)
-      if (!BusId || !reservationDate) {
-        return res.status(400).json({ error: 'BusId and reservationDate are required parameters' });
+      const {BusId,assignationDate}  = req.query;
+      console.log("bus id and reservation date==",BusId,assignationDate)
+      if (!BusId || !assignationDate) {
+        return res.status(400).json({ error: 'BusId and assignationDate are required parameters' });
       }
     // const assignedBuses = await assignedBus.findAll();
     const freeSeatNumbersByBus = [];
@@ -279,7 +277,7 @@ const getFreeSeatNumbersByBus = async (req, res) => {
         // Fetch booked seat numbers for this bus
         const bookedTickets = await Ticket.findAll({
           where: { BusId,
-                   reservationDate
+            assignationDate
                   },
          attributes: ['seatNumber'],
           raw: true,

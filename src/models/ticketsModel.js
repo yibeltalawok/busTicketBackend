@@ -14,6 +14,10 @@ const Ticket = sequelize.define('Ticket', {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  uniqueNumber: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
   fullName: {
     type: DataTypes.STRING,
     allowNull: true,
@@ -23,6 +27,10 @@ const Ticket = sequelize.define('Ticket', {
     allowNull: true,
   },
   reservationDate: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  assignationDate: {
     type: DataTypes.STRING,
     allowNull: false,
   },
