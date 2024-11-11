@@ -34,6 +34,14 @@ const Ticket = sequelize.define('Ticket', {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  servicePayment:{
+    type:DataTypes.STRING,
+    allowNull:true
+  },
+  cost:{
+    type:DataTypes.STRING,
+    allowNull:true
+  }
 });
 
 // Define associations

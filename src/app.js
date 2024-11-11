@@ -12,9 +12,8 @@ const winston = require("winston");
 // const dbName = process.env.DB_NAME;
 const app = express();
 app.use(cors());
-const PORT = process.env.PORT || 3008;
+const PORT = process.env.PORT || 7000;
 app.use(bodyParser.json());
-
 // Body parsing middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));

@@ -12,7 +12,9 @@ const {
   getTicketOrdersByDate,
   getTicketOrdersByPassenger,
   getFreeSeatNumbersByBus,
-  checkSeatReservation
+  checkSeatReservation,
+  getTicketOrdersByBusId,
+  getTicketOrdersAnalysis
 } = require('../controllers/ticketsController');
 
 // Validation middleware for the createTicketOrder endpoint
@@ -43,7 +45,9 @@ router.get('/get-free', getFreeSeatNumbersByBus); // Corrected the route path
 router.post('/check-bus-seat-reservation', checkSeatReservation); // Changed to POST method and corrected the route path
 router.get('/ticket-bus', getTicketOrdersByBus);
 router.get('/ticket/route/:RouteId', param('RouteId').isNumeric(), getTicketOrdersByRoute);
-router.get('/ticket/date/:date', param('date').isISO8601(), getTicketOrdersByDate); // Added validation for date
+router.get('/ticket/bus/:BusId', param('RouteId').isNumeric(), getTicketOrdersByBusId);
+router.get('/ticket-date', getTicketOrdersByDate);
+router.get('/ticket-analysis', getTicketOrdersAnalysis);
 router.get('/ticket/passenger/:passengerId', param('passengerId').isNumeric(), getTicketOrdersByPassenger);
 
 module.exports = router;
