@@ -11,10 +11,13 @@ const {
   getTicketOrdersByRoute,
   getTicketOrdersByDate,
   getTicketOrdersByPassenger,
+  getReservedSeatNumbersByBus,
   getFreeSeatNumbersByBus,
   checkSeatReservation,
   getTicketOrdersByBusId,
-  getTicketOrdersAnalysis
+  getTicketOrdersAnalysis,
+  getTicketOrdersByBusLevel,
+  getTicketOrdersReport
 } = require('../controllers/ticketsController');
 
 // Validation middleware for the createTicketOrder endpoint
@@ -42,12 +45,14 @@ router.get('/ticket/:id', param('id').isNumeric(), getTicketOrderById);
 router.put('/ticket/:id', updateTicketOrderById);
 router.delete('/ticket/:id', param('id').isNumeric(), deleteTicketOrderById);
 router.get('/get-free', getFreeSeatNumbersByBus); // Corrected the route path
+router.get('/get-reserved', getReservedSeatNumbersByBus); // Corrected the route path
 router.post('/check-bus-seat-reservation', checkSeatReservation); // Changed to POST method and corrected the route path
 router.get('/ticket-bus', getTicketOrdersByBus);
 router.get('/ticket/route/:RouteId', param('RouteId').isNumeric(), getTicketOrdersByRoute);
 router.get('/ticket/bus/:BusId', param('RouteId').isNumeric(), getTicketOrdersByBusId);
 router.get('/ticket-date', getTicketOrdersByDate);
 router.get('/ticket-analysis', getTicketOrdersAnalysis);
+router.get('/ticket-buslevel', getTicketOrdersByBusLevel);
 router.get('/ticket/passenger/:passengerId', param('passengerId').isNumeric(), getTicketOrdersByPassenger);
-
+router.get('/ticket-report', getTicketOrdersReport);
 module.exports = router;
