@@ -137,6 +137,7 @@ const getTicketOrdersReport = async (req, res) => {
                 { model: Route }
               ]});
    let busTalga=0
+   let busId=0
    let route=0
    let seatNumber=0
    let ticket=0
@@ -149,25 +150,43 @@ const getTicketOrdersReport = async (req, res) => {
    let totalCost=0
    let totalPayment=0
    let ticketReport=[]
+   let generallCost=0
+   let generallServicePayment=0
+   let countBus=0
+   let countRoute=0
+   let countMale=0
+   let countFemale=0
+   let totalPassenger=0
    for(let i=0;i<ticketOrders?.length;i++){
+     totalPassenger=ticketOrders?.length
+      generallCost+=parseFloat(ticketOrders[i]?.Route?.cost)
+      generallServicePayment+=parseFloat(ticketOrders[i]?.Route?.servicePayment)
+      if(ticketOrders[i]?.Bus?.talga!=ticketOrders[i+1]?.Bus?.talga)
+        ++countBus
+      if(ticketOrders[i]?.Route?.destinationStationId!=ticketOrders[i+1]?.Route?.destinationStationId)
+        countRoute++
+      if(ticketOrders[i]?.Passenger?.gender=="male")
+        ++countMale
+      if(ticketOrders[i]?.Passenger?.gender=='female')
+        ++countFemale
+       
        if(ticketOrders[i]?.Bus?.talga!=ticketOrders[i+1]?.Bus?.talga){
         busTalga=ticketOrders[i]?.Bus?.talga
+        busId=ticketOrders[i]?.Bus?.id
         seatNumber=ticketOrders[i]?.Bus?.capacity
         route=ticketOrders[i]?.Route?.destinationStationId
-        if(ticketOrders[i]?.Passenger?.gender=='male')
-            male++
-        if(ticketOrders[i]?.Passenger?.gender=='female')
-            female++
         cost=ticketOrders[i]?.Route?.cost
         servicePayment=ticketOrders[i]?.Route?.servicePayment
         }}
-       ticket=male+female
+       ticket=countMale+countFemale
        freeSeat=seatNumber-ticket
        totalCost=cost*ticket
        totalServicePayment=servicePayment*ticket
        totalPayment=totalCost+totalServicePayment
-       ticketReport.push({busTalga:busTalga,route:route,seatNumber:seatNumber,ticket:ticket,freeSeat:freeSeat,
-        female:female,male:male,cost:cost,servicePayment:servicePayment,totalServicePayment:totalServicePayment,totalCost:totalCost,totalPayment:totalPayment})  
+       ticketReport.push({busId:busId,busTalga:busTalga,route:route,seatNumber:seatNumber,ticket:ticket,freeSeat:freeSeat,
+       female:female,male:male,cost:cost,servicePayment:servicePayment,totalServicePayment:totalServicePayment,
+       totalCost:totalCost,totalPayment:totalPayment,generallCost:generallCost,generallServicePayment:generallServicePayment,
+       countBus:countBus,totalPassenger:totalPassenger,countMale:countMale,countFemale:countFemale})  
        res.status(200).json(ticketReport);
   } catch (error) {
     console.error('Error fetching ticket orders for bus:', error);
