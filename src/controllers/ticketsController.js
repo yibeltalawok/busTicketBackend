@@ -538,6 +538,7 @@ const getFreeSeatNumbersByBus = async (req, res) => {
         return res.status(400).json({ errors: errors.array() });
       }
       const {BusId,assignationDate}  = req.query;
+      console.log("date and id==",BusId,assignationDate)
       if (!BusId || !assignationDate) {
         return res.status(400).json({ error: 'BusId and assignationDate are required parameters' });
       }
