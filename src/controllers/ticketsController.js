@@ -4,7 +4,7 @@ const Ticket = require('../models/ticketsModel');
 const Bus = require('../models/busModel');
 const assignedBus = require('../models/busAssignationModel');
 const Route = require('../models/terminalModel');
-// const Passenger = require('../models/passengerModel');
+const Passenger = require('../models/passengerModel');
 const { level } = require('winston');
 // Create a new ticket order
 const createTicketOrder = async (req, res) => {
@@ -13,7 +13,7 @@ const createTicketOrder = async (req, res) => {
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-    const {seatNumber,fullName,phoneNumber,uniqueNumber,reservationDate,assignationDate,BusId,RouteId,cost,servicePayment} = req.body;
+    const {seatNumber,fullName,phoneNumber,gender,uniqueNumber,reservationDate,assignationDate,PassengerId,BusId,RouteId,cost,servicePayment} = req.body;
   //   // Check if the bus exists
   //   const bus = await Bus.findByPk(BusId);
   //   const capacity=bus.capacity;
@@ -35,8 +35,8 @@ const createTicketOrder = async (req, res) => {
     let data =[]
     for(let i=0;i<req.body.length;i++){
       data.push({seatNumber:req.body[i].seatNumber,reservationDate:req.body[i].reservationDate,assignationDate:req.body[i].assignationDate
-        ,fullName:req.body[i].fullName,uniqueNumber:req.body[i].uniqueNumber,phoneNumber:req.body[i].phoneNumber,
-      BusId:req.body[i].BusId,RouteId:req.body[i].RouteId,servicePayment:req.body[i].servicePayment,cost:req.body[i].cost})}
+        ,fullName:req.body[i].fullName,gender:req.body[i].gender,uniqueNumber:req.body[i].uniqueNumber,phoneNumber:req.body[i].phoneNumber,
+        PassengerId:req.body[i].PassengerId,BusId:req.body[i].BusId,RouteId:req.body[i].RouteId,servicePayment:req.body[i].servicePayment,cost:req.body[i].cost})}
     const ticket = await Ticket.bulkCreate(data);
     res.status(201).json(ticket);
   } catch (error) {
@@ -49,7 +49,7 @@ const getAllTicketOrders = async (req, res) => {
   try {
     const ticketOrders = await Ticket.findAll({
       include: [
-        //{ model: Passenger },
+        { model: Passenger },
         { model: Bus },
         { model: Route }
       ]
@@ -67,7 +67,7 @@ const getTicketOrderById = async (req, res) => {
     const ticketOrder = await Ticket.findByPk(id,
       {
         include: [
-          //{ model: Passenger},
+          { model: Passenger},
           { model: Bus},
           { model: Route }
         ]});
@@ -85,7 +85,7 @@ const getTicketOrderById = async (req, res) => {
 const updateTicketOrderById = async (req, res) => {
   try {
     const { id } = req.params;
-    const { seatNumber,fullName,phoneNumber,uniqueNumber, reservationDate,assignationDate, BusId, RouteId,cost,servicePayment } = req.body;
+    const { seatNumber,fullName,phoneNumber,gender,uniqueNumber, reservationDate,assignationDate,PassengerId, BusId, RouteId,cost,servicePayment } = req.body;
     // Check if the ticket order exists
     const ticket = await Ticket.findByPk(id);
     if (!ticket) {
@@ -99,7 +99,8 @@ const updateTicketOrderById = async (req, res) => {
       phoneNumber,
       uniqueNumber,
       fullName,
-     // PassengerId,
+      gender,
+     PassengerId,
       BusId,
       RouteId,
       cost,
@@ -133,7 +134,7 @@ const getTicketOrdersReport = async (req, res) => {
    const ticketOrders = await Ticket.findAll({
       where: {reservationDate},
       include: [
-               //{ model:Passenger},
+               { model:Passenger},
                 { model: Bus },
                 { model: Route }
               ]});
@@ -209,7 +210,7 @@ const getTicketOrdersByBus = async (req, res) => {
         const ticketOrders = await Ticket.findAll({
           where: { BusId,reservationDate },
           include: [
-          //  { model: Passenger },
+           { model: Passenger },
             { model: Bus },
             { model: Route }
           ]
@@ -256,7 +257,7 @@ const getTicketOrdersByBus = async (req, res) => {
        const ticketOrder = await Ticket.findAll({
          where: {reservationDate },
          include: [
-         //{ model: Passenger },
+         { model: Passenger },
            { model: Bus },
            { model: Route }
          ]
@@ -393,7 +394,7 @@ const getTicketOrdersByDate = async (req, res) => {
       const ticketOrders = await Ticket.findAll({
         where: {reservationDate:reservationDate },
         include: [
-          //{ model: Passenger },
+          { model: Passenger },
           { model: Bus },
           { model: Route }
         ]
@@ -441,7 +442,7 @@ const getTicketOrdersAnalysis = async (req, res) => {
       const ticketOrders = await Ticket.findAll({
         where: {reservationDate:reservationDate },
         include: [
-          //{ model: Passenger },
+          { model: Passenger },
           { model: Bus },
           { model: Route }
         ]
@@ -480,7 +481,7 @@ const getTicketOrdersAnalysis = async (req, res) => {
        const ticketOrders = await Ticket.findAll({
         where: { PassengerId:passengerId },
         include: [
-       //   { model: Passenger },
+         { model: Passenger },
           { model: Bus },
           { model: Route }
         ]
