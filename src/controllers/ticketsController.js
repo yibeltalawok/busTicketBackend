@@ -43,7 +43,7 @@ const createTicketOrder = async (req, res) => {
     //     ,fullName:req.body[i].fullName,gender:req.body[i].gender,uniqueNumber:req.body[i].uniqueNumber,phoneNumber:req.body[i].phoneNumber,
     //     PassengerId:req.body[i].PassengerId,BusId:req.body[i].BusId,RouteId:req.body[i].RouteId,servicePayment:req.body[i].servicePayment,cost:req.body[i].cost})}
     // const ticket = await Ticket.bulkCreate(data);
-    const ticket = await Ticket.bulkCreate({ ...req.body });
+    const ticket = await Ticket.create({ ...req.body });
 
     res.status(201).json(ticket);
   } catch (error) {
