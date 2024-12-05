@@ -23,9 +23,15 @@ exports.createBus = async (req, res) => {
 
     // Create the bus
     // const newBus = await Bus.create({ ...busData, driverId });
+        // Check if the bus exists 
+       const talga  =req.body.talga
+       const existingBus = await Bus.findOne({ where: { talga } });
+       if (existingBus) {
+         return res.status(400).json({ error: 'Bus is already exist' });
+        }
        const newBus = await Bus.create({ ...req.body });
-    res.status(201).json(newBus);
-  } catch (error) {
+       res.status(201).json(newBus);
+    } catch (error) {
     if (error.name === 'SequelizeValidationError') {
       res.status(400).json({ error: 'Validation error', details: error.errors });
     } else {

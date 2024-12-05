@@ -8,6 +8,12 @@ const { validationResult } = require('express-validator');
 // CREATE a new bus assignation
 exports.createBusAssignation = async (req, res) => {
   try {
+            // Check if the bus exists 
+            const busId  =req.body.busId
+            const existingBus = await BusAssignation.findOne({ where: { busId } });
+            if (existingBus) {
+              return res.status(400).json({ error: 'Bus is already Assigned' });
+             }
     const newBusAssignation = await BusAssignation.create(req.body);
     res.status(201).json(newBusAssignation);
   } catch (error) {
