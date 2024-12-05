@@ -30,14 +30,21 @@ const createTicketOrder = async (req, res) => {
   //   if (!(await isSeatAvailable(bus, seatNumber))) {
   //     return res.status(400).json({ error: 'Seat already booked' });
   //   }
+          // Check if the bus exists 
+          const seat  =req.body.seatNumber
+          const existingTicket = await Ticket.findOne({ where: { seat } });
+          if (existingTicket) {
+            return res.status(400).json({ error: 'Ticket is already exist' });
+           }
   // Record the ticket order
-  console.log("ticket data===",req.body)
     let data =[]
-    for(let i=0;i<req.body.length;i++){
-      data.push({seatNumber:req.body[i].seatNumber,reservationDate:req.body[i].reservationDate,assignationDate:req.body[i].assignationDate
-        ,fullName:req.body[i].fullName,gender:req.body[i].gender,uniqueNumber:req.body[i].uniqueNumber,phoneNumber:req.body[i].phoneNumber,
-        PassengerId:req.body[i].PassengerId,BusId:req.body[i].BusId,RouteId:req.body[i].RouteId,servicePayment:req.body[i].servicePayment,cost:req.body[i].cost})}
-    const ticket = await Ticket.bulkCreate(data);
+    // for(let i=0;i<req.body.length;i++){
+    //   data.push({seatNumber:req.body[i].seatNumber,reservationDate:req.body[i].reservationDate,assignationDate:req.body[i].assignationDate
+    //     ,fullName:req.body[i].fullName,gender:req.body[i].gender,uniqueNumber:req.body[i].uniqueNumber,phoneNumber:req.body[i].phoneNumber,
+    //     PassengerId:req.body[i].PassengerId,BusId:req.body[i].BusId,RouteId:req.body[i].RouteId,servicePayment:req.body[i].servicePayment,cost:req.body[i].cost})}
+    // const ticket = await Ticket.bulkCreate(data);
+    const ticket = await Ticket.bulkCreate({ ...req.body });
+
     res.status(201).json(ticket);
   } catch (error) {
     console.error('Error creating ticket order:', error);
