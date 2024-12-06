@@ -44,11 +44,11 @@ const Booking = sequelize.define('Booking', {
     type: DataTypes.STRING,
     allowNull: true,
   },
-  date: {
+  cost: {
     type: DataTypes.STRING,
     allowNull: true,
   },
-  cost: {
+  date: {
     type: DataTypes.STRING,
     allowNull: true,
   },

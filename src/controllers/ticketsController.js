@@ -13,7 +13,7 @@ const createTicketOrder = async (req, res) => {
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-    const {seatNumber,fullName,phoneNumber,gender,uniqueNumber,reservationDate,assignationDate,PassengerId,BusId,RouteId,cost,servicePayment} = req.body;
+    // const {seatNumber,fullName,phoneNumber,gender,uniqueNumber,reservationDate,assignationDate,PassengerId,assignId,BusId,RouteId,cost,servicePayment} = req.body;
   //   // Check if the bus exists
   //   const bus = await Bus.findByPk(BusId);
   //   const capacity=bus.capacity;
@@ -31,20 +31,21 @@ const createTicketOrder = async (req, res) => {
   //     return res.status(400).json({ error: 'Seat already booked' });
   //   }
           // Check if the bus exists 
-          const seat  =req.body.seatNumber
-          const existingTicket = await Ticket.findOne({ where: { seat } });
+
+          const seatNumber  =req.body[0].seatNumber;
+          const assignId  =req.body[0].assignId
+          const existingTicket = await Ticket.findOne({ where: { seatNumber,assignId } });
           if (existingTicket) {
             return res.status(400).json({ error: 'Ticket is already exist' });
            }
   // Record the ticket order
-    let data =[]
+    // let data =[]
     // for(let i=0;i<req.body.length;i++){
     //   data.push({seatNumber:req.body[i].seatNumber,reservationDate:req.body[i].reservationDate,assignationDate:req.body[i].assignationDate
     //     ,fullName:req.body[i].fullName,gender:req.body[i].gender,uniqueNumber:req.body[i].uniqueNumber,phoneNumber:req.body[i].phoneNumber,
     //     PassengerId:req.body[i].PassengerId,BusId:req.body[i].BusId,RouteId:req.body[i].RouteId,servicePayment:req.body[i].servicePayment,cost:req.body[i].cost})}
     // const ticket = await Ticket.bulkCreate(data);
-    const ticket = await Ticket.create({ ...req.body });
-
+    const ticket = await Ticket.create({ ...req.body[0] });
     res.status(201).json(ticket);
   } catch (error) {
     console.error('Error creating ticket order:', error);

@@ -42,6 +42,14 @@ const BusAssignation = sequelize.define('BusAssignation', {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
+  servicePayment: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  cost: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
   reason: {
     type: DataTypes.STRING,
     allowNull: true,

@@ -4,12 +4,21 @@ const sequelize = require('../config/db');
 const Passenger = require('./passengerModel');
 const Bus = require('./busModel');
 const Route = require('./terminalModel');
+const BusAssignation = require('./busAssignationModel');
 const Ticket = sequelize.define('Ticket', {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
     autoIncrement: true,
   },
+  // assignId: {
+  //   type: DataTypes.INTEGER,
+  //   allowNull: false,
+  //   references: {
+  //     model: BusAssignation,
+  //     key: 'id',
+  //   },
+  // },
   seatNumber: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -49,6 +58,7 @@ const Ticket = sequelize.define('Ticket', {
 });
 
 // Define associations
+Ticket.belongsTo(BusAssignation, { foreignKey: 'assignId', as: 'assignedBus' });
 Ticket.belongsTo(Passenger);
 Ticket.belongsTo(Bus);
 Ticket.belongsTo(Route);
