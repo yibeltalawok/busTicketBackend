@@ -14,7 +14,6 @@ const {
   getReservedSeatNumbersByBus,
   getFreeSeatNumbersByBus,
   checkSeatReservation,
-  getTicketOrdersByBusId,
   getTicketOrdersAnalysis,
   getTicketOrdersByBusLevel,
   getTicketOrdersReport
@@ -49,7 +48,6 @@ router.get('/get-reserved', getReservedSeatNumbersByBus); // Corrected the route
 router.post('/check-bus-seat-reservation', checkSeatReservation); // Changed to POST method and corrected the route path
 router.get('/ticket-bus', getTicketOrdersByBus);
 router.get('/ticket/route/:RouteId', param('RouteId').isNumeric(), getTicketOrdersByRoute);
-router.get('/ticket/bus/:BusId', param('RouteId').isNumeric(), getTicketOrdersByBusId);
 router.get('/ticket-date', getTicketOrdersByDate);
 router.get('/ticket-analysis', getTicketOrdersAnalysis);
 router.get('/ticket-buslevel', getTicketOrdersByBusLevel);

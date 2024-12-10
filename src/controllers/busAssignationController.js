@@ -3,6 +3,7 @@ const BusAssignation = require('../models/busAssignationModel');
 const Bus = require('../models/busModel');
 const Station = require('../models/stationModel');
 const Route = require('../models/terminalModel');
+const Association = require('../models/assocationModel');
 const { validationResult } = require('express-validator');
 
 // CREATE a new bus assignation
@@ -40,7 +41,11 @@ exports.getAllBusAssignations = async (req, res) => {
           { model: Station, as: 'sourceStation' },
           { model: Station, as: 'destinationStation' }
         ] },
-        { model: Bus, as: 'bus' },
+        { model: Bus, as: 'bus' ,
+          include:[
+            { model: Association,as: 'association'},
+          ]
+        },
       ],});
     res.status(200).json(allBusAssignations);
   } catch (error) {
@@ -58,7 +63,9 @@ exports.getBusAssignationById = async (req, res) => {
           { model: Station, as: 'sourceStation' },
           { model: Station, as: 'destinationStation' }
         ] },
-        { model: Bus, as: 'bus' },
+        { model: Bus, as: 'bus',include:[
+          { model: Association,as: 'association'},
+        ] },
       ],
     });
     if (busAssignation) {

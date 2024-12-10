@@ -44,7 +44,7 @@ exports.getAllBuses = async (req, res) => {
     const allBuses = await Bus.findAll({
       include: [
         // { model: BusOwner },
-        { model: Association },
+        { model: Association,as: 'association'},
         // { model: Driver, as: 'driver' } // Specify the alias 'driver'
       ],
     });
@@ -62,7 +62,7 @@ exports.getBusById = async (req, res) => {
     const bus = await Bus.findByPk(busId, {
       include: [
         // { model: BusOwner },
-        { model: Association },
+        { model: Association,as: 'association'},
         // { model: Driver, as: 'driver' } // Specify the alias 'driver'
       ],
     });

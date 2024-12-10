@@ -1,7 +1,6 @@
 // controllers/busRoutingController.js
 const Route = require('../models/terminalModel');
 const Station = require('../models/stationModel');
-
 exports.createTerminal = async (req, res, next) => {
   try {
   const { sourceStationId, destinationStationId,cost, graveDistance,asphaltDistance,servicePayment,estimatedTime } = req.body;
@@ -12,24 +11,20 @@ exports.createTerminal = async (req, res, next) => {
       res.status(400).json({ error: 'Source or destination station not found.' });
       return;
     }
-
     const newTerminal = await Route.create({
-      sourceStationId,
-      destinationStationId,
-      graveDistance,
+       sourceStationId,
+       destinationStationId,
+       graveDistance,
        asphaltDistance,
        cost,
        servicePayment,
        estimatedTime
     });
-
     res.status(201).json(newTerminal);
   } catch (error) {
     next(error);
   }
 };
-
-
 exports.getAllTerminals = async (req, res, next) => {
      try {
        const terminals = await Route.findAll({
@@ -44,7 +39,6 @@ exports.getAllTerminals = async (req, res, next) => {
        next(error);
      }
    };
-
    exports.getTerminalById = async (req, res, next) => {
      const { id } = req.params;
      try {
@@ -54,7 +48,6 @@ exports.getAllTerminals = async (req, res, next) => {
            { model: Station, as: 'destinationStation' },
          ],
        });
-
        if (!busRouting) {
          res.status(404).json({ error: 'Route not found try again.' });
        } else {
