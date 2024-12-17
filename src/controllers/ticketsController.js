@@ -9,11 +9,11 @@ const { level } = require('winston');
 // Create a new ticket order
 const createTicketOrder = async (req, res) => {
   try {
-    const errors = validationResult(req);
+const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-    // const {seatNumber,fullName,phoneNumber,gender,uniqueNumber,reservationDate,assignationDate,PassengerId,assignId,BusId,RouteId,cost,servicePayment} = req.body;
+  // const {seatNumber,fullName,phoneNumber,gender,uniqueNumber,reservationDate,assignationDate,PassengerId,assignId,BusId,RouteId,cost,servicePayment} = req.body;
   //   // Check if the bus exists
   //   const bus = await Bus.findByPk(BusId);
   //   const capacity=bus.capacity;
@@ -30,8 +30,7 @@ const createTicketOrder = async (req, res) => {
   //   if (!(await isSeatAvailable(bus, seatNumber))) {
   //     return res.status(400).json({ error: 'Seat already booked' });
   //   }
-          // Check if the bus exists 
-
+  //        // Check if the bus exists 
           const seatNumber  =req.body[0].seatNumber;
           const assignId  =req.body[0].assignId
           const existingTicket = await Ticket.findOne({ where: { seatNumber,assignId } });
@@ -88,12 +87,11 @@ const getTicketOrderById = async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
-
 // Update ticket order by ID
 const updateTicketOrderById = async (req, res) => {
   try {
     const { id } = req.params;
-    const { seatNumber,fullName,phoneNumber,gender,uniqueNumber, reservationDate,assignationDate,PassengerId, BusId, RouteId,cost,servicePayment } = req.body;
+const { seatNumber,fullName,phoneNumber,gender,uniqueNumber, reservationDate,assignationDate,PassengerId, BusId, RouteId,cost,servicePayment } = req.body;
     // Check if the ticket order exists
     const ticket = await Ticket.findByPk(id);
     if (!ticket) {
@@ -139,20 +137,16 @@ const deleteTicketOrderById = async (req, res) => {
 const getTicketOrdersReport = async (req, res) => {
   try {
    const {reservationDate}  = req.query;
-   console.log("reservationDate==============",reservationDate)
    if (reservationDate=="null-null-null") {
     return res.status(404).json({ error: 'reservationDate not found' });
   }
    const ticketOrders = await Ticket.findAll({
       where: {reservationDate},
       include: [
-               { model:Passenger},
+                { model:Passenger},
                 { model: Bus },
                 { model: Route }
-              ]});
-   let busTalga=0
-   let busId=0
-   let route=0
+               ]});
    let seatNumber=0
    let ticket=0
    let freeSeat=0
@@ -164,6 +158,7 @@ const getTicketOrdersReport = async (req, res) => {
    let totalCost=0
    let totalPayment=0
    let ticketReport=[]
+   let busData=[]
    let generallCost=0
    let generallServicePayment=0
    let countBus=0
@@ -172,35 +167,47 @@ const getTicketOrdersReport = async (req, res) => {
    let countFemale=0
    let totalPassenger=0
    for(let i=0;i<ticketOrders?.length;i++){
-     totalPassenger=ticketOrders?.length
+      totalPassenger=ticketOrders?.length
       generallCost+=parseFloat(ticketOrders[i]?.Route?.cost)
       generallServicePayment+=parseFloat(ticketOrders[i]?.Route?.servicePayment)
       if(ticketOrders[i]?.Bus?.talga!=ticketOrders[i+1]?.Bus?.talga)
-        ++countBus
+        countBus++
       if(ticketOrders[i]?.Route?.destinationStationId!=ticketOrders[i+1]?.Route?.destinationStationId)
         countRoute++
       if(ticketOrders[i]?.gender=="male")
-        ++countMale
+        countMale++
       if(ticketOrders[i]?.gender=='female')
-        ++countFemale
-
-       if(ticketOrders[i]?.Bus?.talga!=ticketOrders[i+1]?.Bus?.talga){
-        busTalga=ticketOrders[i]?.Bus?.talga
-        busId=ticketOrders[i]?.Bus?.id
-        seatNumber=ticketOrders[i]?.Bus?.capacity
-        route=ticketOrders[i]?.Route?.destinationStationId
-        cost=ticketOrders[i]?.Route?.cost
-        servicePayment=ticketOrders[i]?.Route?.servicePayment
-        }}
-       ticket=countMale+countFemale
-       freeSeat=seatNumber-ticket
-       totalCost=cost*ticket
-       totalServicePayment=servicePayment*ticket
-       totalPayment=totalCost+totalServicePayment
-       ticketReport.push({busId:busId,busTalga:busTalga,route:route,seatNumber:seatNumber,ticket:ticket,freeSeat:freeSeat,
-       female:female,male:male,cost:cost,servicePayment:servicePayment,totalServicePayment:totalServicePayment,
-       totalCost:totalCost,totalPayment:totalPayment,generallCost:generallCost,generallServicePayment:generallServicePayment,
-       countBus:countBus,totalPassenger:totalPassenger,countMale:countMale,countFemale:countFemale})  
+        countFemale++
+      if(ticketOrders[i]?.busId==ticketOrders[i+1]?.busId){
+        if(ticketOrders[i]?.gender=="male")
+          male++
+        if(ticketOrders[i]?.gender=='female')
+          female++
+      }
+    ticket=male+female
+    freeSeat=ticketOrders[i]?.Bus.capacity-ticket
+    totalCost=ticketOrders[i]?.Route?.cost*ticket
+    totalServicePayment=ticketOrders[i]?.Route?.servicePayment*ticket
+    totalPayment=totalCost+totalServicePayment
+    
+  if(ticketOrders[i]?.Bus?.talga!=ticketOrders[i+1]?.Bus?.talga){
+    busData.push({sideNo:ticketOrders[i]?.Bus?.sideNo,busTalga:ticketOrders[i]?.Bus?.talga,freeSeat:freeSeat,male:male,
+    female:female,cost:ticketOrders[i]?.Route?.cost,totalCost:totalCost,servicePayment:ticketOrders[i]?.Route?.servicePayment,
+    totalServicePayment:totalServicePayment,totalPayment:totalPayment,ticket:ticket,busId:ticketOrders[i]?.Bus?.id,
+    seatNumber:ticketOrders[i]?.Bus?.capacity,route:ticketOrders[i]?.Route?.destinationStationId,
+    })
+  male=0
+  female=0
+  }
+        // ticket=countMale+countFemale
+        // totalCost=cost*ticket
+        // totalServicePayment=servicePayment*ticket
+        // totalPayment=totalCost+totalServicePayment
+      }
+       ticketReport.push({data:busData,countBus:countBus,countRoute:countRoute,countMale:countMale,countFemale:countFemale,totalPassenger:totalPassenger,generallCost:generallCost,generallServicePayment:generallServicePayment})
+      //  ,ticket:ticket,freeSeat:freeSeat,totalServicePayment:totalServicePayment,
+      //  totalCost:totalCost,totalPayment:totalPayment,generallCost:generallCost,generallServicePayment:generallServicePayment,
+      //  countMale:countMale,countFemale:countFemale})
        res.status(200).json(ticketReport);
   } catch (error) {
     console.error('Error fetching ticket orders for bus:', error);
@@ -295,7 +302,7 @@ const getTicketOrdersByBus = async (req, res) => {
              countRoute++
            if(ticketOrders[i]?.gender=='male')
              countMale++
-           if(ticketOrders[i]?.Passenger?.gender=='female')
+           if(ticketOrders[i]?.gender=='female')
              countFemale++
            }
            totalPayment=parseFloat(totalCost)+parseFloat(totalServicePayment)
