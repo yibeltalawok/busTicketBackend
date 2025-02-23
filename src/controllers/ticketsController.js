@@ -32,8 +32,11 @@ const errors = validationResult(req);
   //   }
   //        // Check if the bus exists 
           const seatNumber  =req.body[0].seatNumber;
-          const assignId  =req.body[0].assignId
-          const existingTicket = await Ticket.findOne({ where: { seatNumber,assignId } });
+          const assignId  =req.body[0].assignId;
+          const reservationDate  =req.body[0].reservationDate
+          const existingTicket = await Ticket.findOne({ where: { 
+            assignId: assignId,
+            seatNumber: seatNumber} });
           if (existingTicket) {
             return res.status(400).json({ error: 'Ticket is already exist' });
            }

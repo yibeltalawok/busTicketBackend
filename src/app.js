@@ -1,7 +1,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const sequelize = require("./config/db");
-const swaggerUi = require("swagger-ui-express");
 require("dotenv").config();
 const { authenticateToken } = require("./middleware/authMiddleware");
 const multer = require("multer");
